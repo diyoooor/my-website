@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES6",                       // or "ES2020", "ESNext", etc.
+    "module": "commonjs",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,                        // Enable strict type checking
+    "esModuleInterop": true,               // Import/export interop
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  }
+}
