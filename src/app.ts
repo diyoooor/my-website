@@ -1,10 +1,13 @@
 // src/app.ts
 import express, { Application } from 'express';
 
-// Routes
-import healthRouter from './routes/health.route';
+// Logger
 import morgan from 'morgan';
 import logger from './utils/logger.util';
+
+// Routes
+import healthRouter from './routes/health.route';
+import userRouter from './routes/user.route';
 
 // Create Express server
 const app: Application = express();
@@ -21,6 +24,7 @@ app.use(morgan('tiny', {
 app.use(express.json());
 
 // Define a simple route
-app.use('/api/v1/health', healthRouter);
+app.use('/health', healthRouter);
+app.use('/user', userRouter)
 
 export default app;
