@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
 import userService from '../services/user.service';
+import { errorResponse, successResponse } from '../utils/response.util';
 
 class UserController {
     public async createUser(req: Request, res: Response): Promise<void> {
         try {
             const newUser = await userService.createUser(req.body);
-            res.status(201).json(newUser);
+            successResponse(res, newUser, 'User created successfully', 201);
         } catch (error: any) {
-            res.status(400).json({ message: error.message });
+            errorResponse(res, error.message, error.code)
         }
     }
 
@@ -16,21 +17,21 @@ class UserController {
             const { id } = req.params;
             const user = await userService.getUserById(id);
             if (!user) {
-                res.status(404).json({ message: 'User not found' });
+                errorResponse(res, 'User not found', 404)
                 return;
             }
-            res.json(user);
+            successResponse(res, user, '', 200);
         } catch (error: any) {
-            res.status(500).json({ message: error.message });
+            errorResponse(res, error.message, error.code)
         }
     }
 
     public async getAllUsers(req: Request, res: Response): Promise<void> {
         try {
             const users = await userService.getAllUsers();
-            res.json(users);
+            successResponse(res, users, '', 200);
         } catch (error: any) {
-            res.status(500).json({ message: error.message });
+            errorResponse(res, error.message, error.code)
         }
     }
 
@@ -39,12 +40,12 @@ class UserController {
             const { id } = req.params;
             const updatedUser = await userService.updateUser(id, req.body);
             if (!updatedUser) {
-                res.status(404).json({ message: 'User not found' });
+                errorResponse(res, 'User not found', 404)
                 return;
             }
             res.json(updatedUser);
         } catch (error: any) {
-            res.status(400).json({ message: error.message });
+            errorResponse(res, error.message, error.code)
         }
     }
 
@@ -53,12 +54,12 @@ class UserController {
             const { id } = req.params;
             const deletedUser = await userService.deleteUser(id);
             if (!deletedUser) {
-                res.status(404).json({ message: 'User not found' });
+                errorResponse(res, 'User not found', 404)
                 return;
             }
             res.json(deletedUser);
         } catch (error: any) {
-            res.status(500).json({ message: error.message });
+            errorResponse(res, error.message, error.code)
         }
     }
 }
