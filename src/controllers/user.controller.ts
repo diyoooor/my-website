@@ -43,7 +43,7 @@ class UserController {
                 errorResponse(res, 'User not found', 404)
                 return;
             }
-            res.json(updatedUser);
+            successResponse(res, updatedUser, `Update ${id} success`, 200);
         } catch (error: any) {
             errorResponse(res, error.message, error.code)
         }
@@ -57,7 +57,7 @@ class UserController {
                 errorResponse(res, 'User not found', 404)
                 return;
             }
-            res.json(deletedUser);
+            successResponse(res, deletedUser, `Delete ${id} success`, 200);
         } catch (error: any) {
             errorResponse(res, error.message, error.code)
         }
