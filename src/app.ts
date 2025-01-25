@@ -9,6 +9,7 @@ import logger from './utils/logger.util';
 import healthRouter from './routes/health.route';
 import userRouter from './routes/user.route';
 import authRouter from './routes/auth.route';
+import productRouter from './routes/product.route';
 
 // Create Express server
 const app: Application = express();
@@ -28,5 +29,6 @@ app.use(express.json());
 app.use('/api/health', healthRouter);
 app.use('/api/user', userRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/product', productRouter)
 
 export default app;
