@@ -1,6 +1,6 @@
 
 import dotenv from 'dotenv';
-import UserModel, { IUser } from '../models/User.model';
+import UserModel, { IUser } from '../models/user.model';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 

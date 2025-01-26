@@ -1,4 +1,4 @@
-import UserModel, { IUser } from "../models/User.model";
+import UserModel, { IUser } from "../models/user.model";
 
 /**
  * The service layer encapsulates all database logic
@@ -8,6 +8,7 @@ import UserModel, { IUser } from "../models/User.model";
 class UserService {
     // Create a new user
     public async createUser(data: Partial<IUser>): Promise<IUser> {
+
         const user = new UserModel(data);
         return user.save();
     }
