@@ -24,21 +24,29 @@ class CartService {
     /**
      * Add a product to the cart or increment if it already exists
      */
-    public async addItemToCart(userId: string, productId: string, quantity = 1): Promise<ICart> {
-        // Get or create the cart
+    public async addItemToCart(
+        userId: string,
+        productId: string,
+        quantity = 1,
+        variantSKU?: string,
+    ): Promise<ICart> {
         const cart = await this.findOrCreateCart(userId);
 
-        // See if product already in the cart
+        // Check if an item with the same product & variantSKU is already in cart
         const existingItem = cart.items.find(
-            (item: any) => item.product.toString() === productId
+            (item:any) =>
+                item.product.toString() === productId &&
+                item.variantSKU === variantSKU
         );
 
         if (existingItem) {
-            // Increment the quantity
             existingItem.quantity += quantity;
         } else {
-            // Add a new item
-            cart.items.push({ product: productId as IProduct['_id'], quantity });
+            cart.items.push({
+                product: productId as IProduct['_id'],
+                variantSKU,
+                quantity,
+            });
         }
 
         await cart.save();

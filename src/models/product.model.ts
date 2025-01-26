@@ -1,21 +1,49 @@
+// src/models/product.model.ts
+
 import { Schema, model, Document } from 'mongoose';
+
+export interface IVariant {
+  sku: string;
+  color?: string;
+  size?: string;
+  price: number;
+  stock: number;
+}
 
 export interface IProduct extends Document {
   name: string;
-  description: string;
-  price: number;
+  description?: string;
+  // If a product can have a "base price" or "default" info, include here
+  basePrice?: number;
+  // The key part: an array of variant subdocuments
+  variants: IVariant[];
   createdAt: Date;
+  updatedAt: Date;
 }
 
-// Mongoose Schema
-const ProductSchema: Schema<IProduct> = new Schema<IProduct>(
+const VariantSchema = new Schema<IVariant>(
+  {
+    sku: { type: String, required: true, unique: true },
+    color: { type: String },
+    size: { type: String },
+    price: { type: Number, required: true },
+    stock: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
+
+const ProductSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true },
-    description: { type: String, required: false },
-    price: { type: Number, required: true },
-    createdAt: { type: Date, default: Date.now },
+    description: { type: String },
+    basePrice: { type: Number, default: 0 },
+    variants: {
+      type: [VariantSchema],
+      default: [],
+    },
   },
   {
+    timestamps: true, // Adds createdAt and updatedAt automatically
     versionKey: false,
   }
 );

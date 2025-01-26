@@ -62,6 +62,48 @@ class ProductController {
             errorResponse(res, error.message, 500, error);
         }
     }
+
+    public async addVariant(req: Request, res: Response): Promise<void> {
+        try {
+            const { productId } = req.params;    // e.g. /api/products/:productId/variants
+            const variantData = req.body;        // { sku, color, size, price, stock }
+
+            const updatedProduct = await productService.addVariant(
+                productId,
+                variantData
+            );
+            successResponse(res, updatedProduct, 'Variant added successfully');
+        } catch (error: any) {
+            errorResponse(res, error.message, 400, error);
+        }
+    }
+
+    public async updateVariant(req: Request, res: Response): Promise<void> {
+        try {
+            const { productId, sku } = req.params; // e.g. /api/products/:productId/variants/:sku
+            const updateData = req.body;           // partial variant data
+
+            const updatedProduct = await productService.updateVariant(
+                productId,
+                sku,
+                updateData
+            );
+            successResponse(res, updatedProduct, 'Variant updated successfully');
+        } catch (error: any) {
+            errorResponse(res, error.message, 400, error);
+        }
+    }
+
+    public async removeVariant(req: Request, res: Response): Promise<void> {
+        try {
+            const { productId, sku } = req.params;
+
+            const updatedProduct = await productService.removeVariant(productId, sku);
+            successResponse(res, updatedProduct, 'Variant removed successfully');
+        } catch (error: any) {
+            errorResponse(res, error.message, 400, error);
+        }
+    }
 }
 
 export default new ProductController();

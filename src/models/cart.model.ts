@@ -1,13 +1,24 @@
+// src/models/cart.model.ts
+
 import { Schema, model, Document } from 'mongoose';
-
-import { IProduct } from './product.model';
 import { IUser } from './user.model';
+import { IProduct } from './product.model';
 
-interface ICartItem {
+/**
+ * Each item in the cart references a specific product
+ * plus optional variant fields (e.g., variantSKU, color, size).
+ */
+export interface ICartItem {
     product: IProduct['_id'];
+    variantSKU?: string;    // unique identifier for the variant
+    variantColor?: string;
+    variantSize?: string;
     quantity: number;
 }
 
+/**
+ * Cart document stores user reference + array of items
+ */
 export interface ICart extends Document {
     user: IUser['_id'];
     items: ICartItem[];
@@ -15,6 +26,9 @@ export interface ICart extends Document {
     updatedAt: Date;
 }
 
+/**
+ * Subdocument schema for a single cart item
+ */
 const CartItemSchema = new Schema<ICartItem>(
     {
         product: {
@@ -22,14 +36,17 @@ const CartItemSchema = new Schema<ICartItem>(
             ref: 'Product',
             required: true,
         },
-        quantity: {
-            type: Number,
-            default: 1,
-        },
+        variantSKU: { type: String },
+        variantColor: { type: String },
+        variantSize: { type: String },
+        quantity: { type: Number, default: 1 },
     },
-    { _id: false } // We can disable _id on subdocs if desired
+    { _id: false } // you can let Mongoose create _id if you prefer
 );
 
+/**
+ * Main Cart schema
+ */
 const CartSchema = new Schema<ICart>(
     {
         user: {
@@ -43,7 +60,7 @@ const CartSchema = new Schema<ICart>(
         },
     },
     {
-        timestamps: true, // automatically adds createdAt and updatedAt
+        timestamps: true, // adds createdAt, updatedAt
         versionKey: false,
     }
 );

@@ -7,34 +7,61 @@ class OrderService {
      * Create an Order from the user's Cart
      */
     public async checkout(userId: string): Promise<IOrder> {
-        // 1. Get the cart items (or create an empty cart if none)
+        // 1. Fetch user's cart
         const cart = await cartService.findOrCreateCart(userId);
 
         if (!cart.items.length) {
             throw new Error('Cart is empty');
         }
 
-        // 2. Build the array of order items, pulling prices from the product docs
+        // 2. Build the array of order items
         let totalPrice = 0;
         const orderItems = [];
 
         for (const cartItem of cart.items) {
-            // Fetch product to get latest price
+            // cartItem.product is the Product _id
+            // cartItem.variantSKU might be the variant ID or SKU
+
             const product = await ProductModel.findById(cartItem.product).exec();
             if (!product) {
                 throw new Error(`Product not found: ${cartItem.product}`);
             }
 
-            const unitPrice = product.price; // current price from DB
-            const quantity = cartItem.quantity;
-            const itemTotal = unitPrice * quantity;
+            // If the cart item references a variant
+            let variantPrice = 0;
+            let variantColor: string | undefined;
+            let variantSize: string | undefined;
+            let variantSKU: string | undefined;
 
+            if (cartItem.variantSKU) {
+                // Find the matching variant in the product.variants array
+                const variant = product.variants.find(
+                    (v) => v.sku === cartItem.variantSKU
+                );
+                if (!variant) {
+                    throw new Error(`Variant not found: ${cartItem.variantSKU}`);
+                }
+
+                variantPrice = variant.price;
+                variantColor = variant.color;
+                variantSize = variant.size;
+                variantSKU = variant.sku;
+            } else {
+                // No variant? Use product's base price (or throw error)
+                variantPrice = product.basePrice || 0;
+            }
+
+            const quantity = cartItem.quantity;
+            const itemTotal = variantPrice * quantity;
             totalPrice += itemTotal;
 
             orderItems.push({
                 product: product._id,
+                variantSKU,
+                variantColor,
+                variantSize,
                 quantity,
-                unitPrice,
+                unitPrice: variantPrice,
             });
         }
 
@@ -43,11 +70,11 @@ class OrderService {
             user: userId,
             items: orderItems,
             totalPrice,
-            status: 'Created', // or any default status
+            status: 'Created',
         });
         await newOrder.save();
 
-        // 4. (Optional) Clear the user's cart now that the order is created
+        // 4. Clear the cart
         await cartService.clearCart(userId);
 
         return newOrder;
