@@ -12,6 +12,7 @@ import authRouter from './routes/auth.route';
 import productRouter from './routes/product.route';
 import cartRouter from './routes/cart.route';
 import orderRouter from './routes/order.route';
+import errorRouter from './routes/error.route';
 
 // Create Express server
 const app: Application = express();
@@ -34,5 +35,6 @@ app.use('/api/auth', authRouter)
 app.use('/api/product', productRouter)
 app.use('/api/cart', cartRouter)
 app.use('/api/order', orderRouter)
+app.use('*' , errorRouter)
 
 export default app;

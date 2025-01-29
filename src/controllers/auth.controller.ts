@@ -11,6 +11,7 @@ class AuthController {
         try {
             const { name, email, password, age } = req.body;
 
+            console.log(req.body)
             const newUser = await authService.register(name, email, password, age);
             successResponse(res, newUser, 'User registered successfully', 201);
         } catch (error: any) {
